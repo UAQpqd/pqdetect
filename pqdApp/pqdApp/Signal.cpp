@@ -1,0 +1,22 @@
+#include "stdafx.h"
+#include "Signal.h"
+#include <iostream>
+#include <fstream>
+#include <stdio.h>
+
+bool Signal::saveData(std::string fileName)
+{
+	double *p = getSignalPtr();
+	FILE *pFile;
+	std::string format = "%f,";
+	std::string format2 = "%f\n";
+	fopen_s(&pFile,fileName.c_str(), "w");
+	for (unsigned long int i = 0; i < getLength()-1; i++)
+	{
+		fprintf(pFile, format.c_str(), *p);
+		p++;
+	}
+	fprintf(pFile, format2.c_str(), *p);
+	fclose(pFile);
+	return true;
+}
