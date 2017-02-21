@@ -12,6 +12,7 @@ public:
 	unsigned long int getLength() { return length; };
 	void setLength (unsigned long int in) { length = in; };
 	bool Signal::saveData(std::string fileName);
+	void addSignal(Signal other);
 	virtual ~Signal()
 	{
 	}

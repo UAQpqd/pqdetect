@@ -20,3 +20,14 @@ bool Signal::saveData(std::string fileName)
 	fclose(pFile);
 	return true;
 }
+
+void Signal::addSignal(Signal other)
+{
+	if (other.getLength() == this->getLength())
+	{
+		double *dst = this->getSignalPtr();
+		double *src = other.getSignalPtr();
+		for (unsigned int i = 0; i < this->getLength(); i++)
+			dst[i] += src[i];
+	}
+}

@@ -145,6 +145,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Noise.h" />
     <ClInclude Include="pqdApp.h" />
     <ClInclude Include="Signal.h" />
     <ClInclude Include="SinusoidalWave.h" />
@@ -152,6 +153,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Noise.cpp" />
     <ClCompile Include="pqdApp.cpp" />
     <ClCompile Include="Signal.cpp" />
     <ClCompile Include="SinusoidalWave.cpp" />
