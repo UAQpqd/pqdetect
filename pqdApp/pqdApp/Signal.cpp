@@ -31,3 +31,23 @@ void Signal::addSignal(Signal other)
 			dst[i] += src[i];
 	}
 }
+
+void Signal::prodSignal(Signal other)
+{
+	if (other.getLength() == this->getLength())
+	{
+		double *dst = this->getSignalPtr();
+		double *src = other.getSignalPtr();
+		for (unsigned int i = 0; i < this->getLength(); i++)
+			dst[i] *= src[i];
+	}
+}
+
+void Signal::addPQDSagSwell(double percentage, unsigned long int start, unsigned long int length)
+{
+	if (start < getLength() &&
+		start + length < getLength() &&
+		percentage >= 0.0)
+		for (unsigned int i = start; i < start + length; i++)
+			data[i] *= percentage;
+}

@@ -6,6 +6,7 @@
 #include "Signal.h"
 #include "SinusoidalWave.h"
 #include "Noise.h"
+#include "SignalFunctions.hpp"
 #include <stdlib.h>
 #define _USE_MATH_DEFINES 1
 #include <math.h>
@@ -19,15 +20,26 @@ int main()
 		"\t\tArturo Yosimar Jaen Cuellar\n\n");
 
 	//Create a new signal to analyze
-	Signal mySignal = SinusoidalWave(60/*Freq*/,127/*Voltage*/,600/*PointsPerSecond*/,1/*Seconds*/,M_PI+0.5/*Start offset in radians*/);
+	double frequency = 60;
+	double phi = M_PI / 2;
+	SinusoidalWave mySignal = SinusoidalWave(frequency/*Freq*/,127/*Voltage*/,600/*PointsPerSecond*/,4/*Seconds*/, phi/*Start offset or phase in radians*/);
 	Noise myWhiteNoise(Noise::WHITE_NOISE, mySignal);
-	//Add white noise to signal
+	//Add 0.5 sag between points 300 and 400
+	mySignal.addPQDSagSwell(0.5, 300, 100);
+	//Add white noise to signal (this must be last step)
 	mySignal.addSignal(myWhiteNoise);
 
 	//Save the signal to a CSV format
 	printf("Writing signal data to myTestSignal.txt ...");
 	mySignal.saveData("myTestSignal.txt");
-	printf("OK\n");
+	printf("Saved\n");
+	
+	//Once the synthetic signal has been created then estimate it's start offset / phase
+	printf("Running Phase Signal Detector...\n");
+	SinusoidalWave mySignalEstimated = SignalFunctions::phaseSignalDetector(mySignal, frequency);
+	printf("Real phi: %.4f, Estimated phi: %.4f\n", phi, mySignalEstimated.getPhi());
+
+
 	system("PAUSE");
     return 0;
 }

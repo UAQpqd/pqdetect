@@ -148,6 +148,7 @@
     <ClInclude Include="Noise.h" />
     <ClInclude Include="pqdApp.h" />
     <ClInclude Include="Signal.h" />
+    <ClInclude Include="SignalFunctions.hpp" />
     <ClInclude Include="SinusoidalWave.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
@@ -156,6 +157,7 @@
     <ClCompile Include="Noise.cpp" />
     <ClCompile Include="pqdApp.cpp" />
     <ClCompile Include="Signal.cpp" />
+    <ClCompile Include="SignalFunctions.cpp" />
     <ClCompile Include="SinusoidalWave.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
