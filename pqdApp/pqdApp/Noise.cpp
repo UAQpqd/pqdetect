@@ -23,7 +23,7 @@ double* Noise::createWhiteNoise(Signal parentSignal, double mean, double stddev)
 	double *tmp = (double *)malloc(sizeof(double)*parentSignal.getLength());
 	std::default_random_engine generator;
 	std::normal_distribution<double> distribution(mean, stddev);
-	for (unsigned int i = 0; i < parentSignal.getLength(); i++)
+	for (unsigned long int i = 0; i < parentSignal.getLength(); i++)
 		tmp[i] = distribution(generator);
 	return tmp;
 }

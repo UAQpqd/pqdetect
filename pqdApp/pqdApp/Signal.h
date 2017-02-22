@@ -3,6 +3,10 @@
 class Signal
 {
 public:
+	typedef enum {
+		OP_DIFF,
+		OP_PROD
+	} opType;
 
 	Signal()
 	{
@@ -15,9 +19,8 @@ public:
 	void setPPS(unsigned long int in) { pps = in; };
 	bool Signal::saveData(std::string fileName);
 	void addSignal(Signal other);
-	void prodSignal(Signal other);
 	void addPQDSagSwell(double percentage, unsigned long int start, unsigned long int length);
-
+	Signal createSignalFrom(Signal second, opType operation);
 
 	virtual ~Signal()
 	{
