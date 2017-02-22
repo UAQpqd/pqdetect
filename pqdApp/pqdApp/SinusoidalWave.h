@@ -5,7 +5,7 @@ class SinusoidalWave :
 {
 public:
 	SinusoidalWave();
-	SinusoidalWave(double freq, double nominalVoltage, unsigned long int pps, double seconds, double phi, bool useSin = true);
+	SinusoidalWave(double freq, double nominalVoltage, unsigned long int pps, double seconds, double phi);
 	~SinusoidalWave();
 	double getNominalValue() { return _nominalValue; };
 	void setNominalValue(double in) { _nominalValue = in; };

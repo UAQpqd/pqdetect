@@ -14,8 +14,8 @@ namespace SignalFunctions
 		const double epsilon = pow(10,-20);
 		double phi[2], alpha = M_PI/2, omega = 2*M_PI*f, d[2], alphai[2];
 
-		SinusoidalWave tmp;
-		Signal a[2];
+		SinusoidalWave a[2];
+		Signal tmp;
 
 		phi[0] = M_PI/2;
 		phi[1] = -M_PI/2;
@@ -25,25 +25,24 @@ namespace SignalFunctions
 		{
 			for (unsigned int i = 0; i < 2; i++)
 			{
-				tmp = SinusoidalWave(
+				a[i] = SinusoidalWave(
 					f/*Freq*/,
-					signal.getNominalValue()/*Voltage*/,
+					1/sqrt(2)/*Voltage*/,
 					signal.getPPS()/*PointsPerSecond*/,
 					(double)signal.getLength()/signal.getPPS()/*Seconds*/,
-					phi[i]/*Start offset or phase in radians*/,
-					false/*use sin = false*/);
-				a[i] = tmp.createSignalFrom(signal,Signal::OP_PROD);
+					phi[i]+M_PI/2/*Start offset or phase in radians, cos()*/);
+				tmp = a[i].createSignalFrom(signal,Signal::OP_PROD);
 
 				long double accum = 0;
-				double *myData = a[i].getSignalPtr();
-				for (unsigned int i = 0; i < a[i].getLength(); i++)
+				double *myData = tmp.getSignalPtr();
+				for (unsigned long int i = 0; i < tmp.getLength(); i++)
 					accum += myData[i];
-				accum /= (long double)a[i].getLength();
+				accum /= (long double)tmp.getLength();
 				d[i] = (double) accum;
 
 				alphai[i] = phi[i];
 			}
-			if (debug) printf("[Debug] Iteration %d -- d0: %f, d1: %f\n", k, d[0], d[1]);
+			if (debug) printf("[Debug] Iteration %d -- d0: %.20f, d1: %.20f\n", k, d[0], d[1]);
 			if (d[0] > d[1])
 				for (unsigned int i = 0; i < 2; i++)
 					phi[i] = alphai[0] + pow(-1, i + 1)*alpha / 2;
@@ -52,6 +51,6 @@ namespace SignalFunctions
 					phi[i] = alphai[1] + pow(-1, i + 1)*(alpha = -abs(alpha)) / 2;
 			alpha /= 2;
 		}
-		return tmp;
+		return a[0];
 	}
 }

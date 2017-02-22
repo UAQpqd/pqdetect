@@ -8,7 +8,8 @@ SinusoidalWave::SinusoidalWave()
 {
 
 }
-SinusoidalWave::SinusoidalWave(double freq, double nominalVoltage, unsigned long int pps, double seconds, double inPhi, bool useSin)
+
+SinusoidalWave::SinusoidalWave(double freq, double nominalVoltage, unsigned long int pps, double seconds, double inPhi)
 {
 	double maxVoltage = sqrt(2)*nominalVoltage;
 	unsigned long int numPoints = (unsigned long int)ceil((double)pps*seconds);
@@ -18,7 +19,7 @@ SinusoidalWave::SinusoidalWave(double freq, double nominalVoltage, unsigned long
 	for (unsigned long int i = 0; i < numPoints; i++)
 	{
 		t = (double)i / (double)pps;
-		dataPtr[i] = maxVoltage*(useSin?sin(inPhi+w*t):cos(inPhi+w*t));
+		dataPtr[i] = maxVoltage*sin(inPhi+w*t);
 	}
 	setSignalPtr(dataPtr);
 	setLength(numPoints);
