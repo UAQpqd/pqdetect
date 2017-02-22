@@ -11,12 +11,12 @@ public:
 	Signal()
 	{
 	}
-	double *getSignalPtr() { return data; };
-	void setSignalPtr(double *ptr) { data = ptr; };
-	unsigned long int getLength() { return length; };
-	void setLength(unsigned long int in) { length = in; };
-	unsigned long int getPPS() { return pps; };
-	void setPPS(unsigned long int in) { pps = in; };
+	double *getSignalPtr() { return _data; };
+	void setSignalPtr(double *ptr) { _data = ptr; };
+	unsigned long int getLength() { return _length; };
+	void setLength(unsigned long int in) { _length = in; };
+	unsigned long int getPPS() { return _pps; };
+	void setPPS(unsigned long int in) { _pps = in; };
 	bool Signal::saveData(std::string fileName);
 	void addSignal(Signal other);
 	void addPQDSagSwell(double percentage, unsigned long int start, unsigned long int length);
@@ -27,8 +27,8 @@ public:
 	}
 
 private:
-	double *data = 0;
-	unsigned long int length = 0;
-	unsigned long int pps = 0;
+	double *_data = 0;
+	unsigned long int _length = 0;
+	unsigned long int _pps = 0;
 };
 

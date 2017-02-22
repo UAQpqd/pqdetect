@@ -35,7 +35,7 @@ void Signal::addPQDSagSwell(double percentage, unsigned long int start, unsigned
 		start + length < getLength() &&
 		percentage >= 0.0)
 		for (unsigned long int i = start; i < start + length; i++)
-			data[i] *= percentage;
+			_data[i] *= percentage;
 }
 
 Signal Signal::createSignalFrom(Signal second, opType operation)
@@ -62,7 +62,6 @@ Signal Signal::createSignalFrom(Signal second, opType operation)
 		default:
 			break;
 		}
-		
 	}
 	return result;
 }

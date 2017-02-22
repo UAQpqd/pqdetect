@@ -27,10 +27,11 @@ namespace SignalFunctions
 			{
 				tmp = SinusoidalWave(
 					f/*Freq*/,
-					signal.getNominalValue()*sqrt(2)/*Voltage*/,
+					signal.getNominalValue()/*Voltage*/,
 					signal.getPPS()/*PointsPerSecond*/,
 					(double)signal.getLength()/signal.getPPS()/*Seconds*/,
-					phi[i]+M_PI/2/*Start offset or phase in radians*/);
+					phi[i]/*Start offset or phase in radians*/,
+					false/*use sin = false*/);
 				a[i] = tmp.createSignalFrom(signal,Signal::OP_PROD);
 
 				long double accum = 0;

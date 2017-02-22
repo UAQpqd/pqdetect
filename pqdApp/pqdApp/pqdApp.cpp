@@ -21,9 +21,9 @@ int main()
 
 	//Create a new signal to analyze
 	double frequency = 60;
-	double phi = M_PI / 2 + 0.4;
+	double phi = M_PI;
 	SinusoidalWave mySignal = SinusoidalWave(frequency/*Freq*/,127/*Voltage*/,600/*PointsPerSecond*/,0.5/*Seconds*/, phi/*Start offset or phase in radians*/);
-	Noise myWhiteNoise(Noise::WHITE_NOISE, mySignal);
+	//Noise myWhiteNoise(Noise::WHITE_NOISE, mySignal);
 	//Add 0.5 sag between points 300 and 400
 	//mySignal.addPQDSagSwell(0.5, 300, 100);
 	//Add white noise to signal (this must be last step)
