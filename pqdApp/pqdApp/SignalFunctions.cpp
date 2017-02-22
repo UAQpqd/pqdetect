@@ -10,7 +10,7 @@ namespace SignalFunctions
 	//phaseSignalDetector estimates the start offset / phase of the signal using its frequency
 	SinusoidalWave phaseSignalDetector(SinusoidalWave signal, double f)
 	{
-		bool debug = true;
+		bool debug = false;
 		const double epsilon = pow(10,-20);
 		double phi[2], alpha = M_PI/2, omega = 2*M_PI*f, d[2], alphai[2];
 
@@ -27,7 +27,7 @@ namespace SignalFunctions
 			{
 				a[i] = SinusoidalWave(
 					f/*Freq*/,
-					1/sqrt(2)/*Voltage*/,
+					/*1/sqrt(2)*/signal.getNominalValue()/*Voltage*/,
 					signal.getPPS()/*PointsPerSecond*/,
 					(double)signal.getLength()/signal.getPPS()/*Seconds*/,
 					phi[i]+M_PI/2/*Start offset or phase in radians, cos()*/);
