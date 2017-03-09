@@ -27,16 +27,10 @@
     <ClInclude Include="pqdApp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Signal.h">
+    <ClInclude Include="SignalGenerator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SinusoidalWave.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Noise.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SignalFunctions.hpp">
+    <ClInclude Include="SignalObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -47,20 +41,14 @@
     <ClCompile Include="pqdApp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SinusoidalWave.cpp">
+    <ClCompile Include="SignalGenerator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Signal.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Noise.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SignalFunctions.cpp">
+    <ClCompile Include="SignalObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="pqdPlot.r" />
+    <None Include="viewScript.R" />
   </ItemGroup>
 </Project>
