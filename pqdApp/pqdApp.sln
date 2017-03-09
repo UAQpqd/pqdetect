@@ -7,16 +7,22 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pqdApp", "pqdApp\pqdApp.vcx
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug CPU|x64 = Debug CPU|x64
+		Debug CPU|x86 = Debug CPU|x86
 		Debug|x64 = Debug|x64
 		Debug|x86 = Debug|x86
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{808165DF-6897-4364-9A32-48F7DECAE521}.Debug|x64.ActiveCfg = Debug|x64
-		{808165DF-6897-4364-9A32-48F7DECAE521}.Debug|x64.Build.0 = Debug|x64
-		{808165DF-6897-4364-9A32-48F7DECAE521}.Debug|x86.ActiveCfg = Debug|Win32
-		{808165DF-6897-4364-9A32-48F7DECAE521}.Debug|x86.Build.0 = Debug|Win32
+		{808165DF-6897-4364-9A32-48F7DECAE521}.Debug CPU|x64.ActiveCfg = Debug CPU|x64
+		{808165DF-6897-4364-9A32-48F7DECAE521}.Debug CPU|x64.Build.0 = Debug CPU|x64
+		{808165DF-6897-4364-9A32-48F7DECAE521}.Debug CPU|x86.ActiveCfg = Debug CPU|Win32
+		{808165DF-6897-4364-9A32-48F7DECAE521}.Debug CPU|x86.Build.0 = Debug CPU|Win32
+		{808165DF-6897-4364-9A32-48F7DECAE521}.Debug|x64.ActiveCfg = Debug GPU|x64
+		{808165DF-6897-4364-9A32-48F7DECAE521}.Debug|x64.Build.0 = Debug GPU|x64
+		{808165DF-6897-4364-9A32-48F7DECAE521}.Debug|x86.ActiveCfg = Debug GPU|Win32
+		{808165DF-6897-4364-9A32-48F7DECAE521}.Debug|x86.Build.0 = Debug GPU|Win32
 		{808165DF-6897-4364-9A32-48F7DECAE521}.Release|x64.ActiveCfg = Release|x64
 		{808165DF-6897-4364-9A32-48F7DECAE521}.Release|x64.Build.0 = Release|x64
 		{808165DF-6897-4364-9A32-48F7DECAE521}.Release|x86.ActiveCfg = Release|Win32
