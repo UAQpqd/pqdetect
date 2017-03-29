@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "SignalObject.h"
 #include <algorithm>
 #include <functional>
@@ -35,8 +34,8 @@ SignalObject & SignalObject::operator+=(const SignalObject & rhs)
 
 SignalObject & SignalObject::operator=(const SignalObject & rhs)
 {
-	SignalObject result(rhs);
-	return result;
+	SignalObject *result = new SignalObject(rhs);
+	return *result;
 }
 
 const SignalObject SignalObject::operator+(const SignalObject & rhs)
@@ -59,7 +58,7 @@ void SignalObject::addSagSwell(size_t start, size_t end, double factor)
 bool SignalObject::writeCSV(std::string filename)
 {
 	FILE * pFile;
-	fopen_s(&pFile,filename.c_str(), "w");
+	pFile = fopen(filename.c_str(), "w");
 	if (pFile == NULL)
 	{
 		return false;
@@ -67,7 +66,7 @@ bool SignalObject::writeCSV(std::string filename)
 	}
 	size_t i = 0;
 	for (;i < m_data->size()-1; i++)
-		fprintf_s(pFile, "%f,", (*m_data)[i]);
-	fprintf_s(pFile, "%f\n", (*m_data)[i]);
+		fprintf(pFile, "%f,", (*m_data)[i]);
+	fprintf(pFile, "%f\n", (*m_data)[i]);
 	return false;
 }
