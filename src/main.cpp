@@ -18,8 +18,9 @@
 template<typename Lambda>
 std::vector<double> runDE(
 	const unsigned long int S,
-	const unsigned long int D,
+	const unsigned long int N,
 	const std::vector<double> randomVector,
+	const size_t randomVectorSize,
 	const unsigned long int maxGenerations,
 	const double stopEpsilon,
 	const double F,
@@ -30,13 +31,13 @@ std::vector<double> runDE(
 int main(int argc, char const *argv[])
 {
     // Create signal
-    const size_t rate = 200;
+    const size_t rate = 44100;
 	SignalGenerator::SineSignalGenerator gen1 = SignalGenerator::SineSignalGenerator();
 	gen1.setRate(rate).setFrequency(60).setPhase(0.3).setAmplitude(127*sqrt(2));
 	SignalGenerator::WhiteNoiseSignalGenerator gen2 = SignalGenerator::WhiteNoiseSignalGenerator();
 	gen2.setMean(0).setStandardDeviation(10);
 	//Generate the sum of them
-	const size_t signalLength = 10000;
+	const size_t signalLength = 10*rate; //Generate 10 seconds
 	SignalObject signal1 = gen1.generate(signalLength);
 	SignalObject signal2 = gen2.generate(signalLength);
 	SignalObject sumSignal = signal1 + signal2;
@@ -51,21 +52,27 @@ int main(int argc, char const *argv[])
     const unsigned long int maxGenerations = 100;
     const double stopEpsilon = 10e-6;
     const double F = 2, R = 0.5;
-    size_t D = 3; //Number of parameters to estimate
-    std::vector<double> randomVector(S*D+maxGenerations*S);
+    size_t N = 3; //Number of parameters to estimate
+    const size_t randomVectorSize = S*(N+1)+1000000;	//Its recommended a big number
+    std::vector<double> randomVector(randomVectorSize);
     std::generate(begin(randomVector), end(randomVector), gen);
-
     std::vector<double> realSignalPtr = sumSignal.m_data[0];
-
-	std::vector<double> estimatedParameters = runDE(S, D, randomVector, maxGenerations, stopEpsilon, F, R,
-		[realSignalPtr,rate](const std::vector<double> c) -> double { 
-			double accum = 0;
+	std::vector<double> estimatedParameters = runDE(
+		S, 
+		N, 
+		randomVector, 
+		randomVectorSize, 
+		maxGenerations, 
+		stopEpsilon, 
+		F, 
+		R,
+		[realSignalPtr,rate](const std::vector<double> c) -> double {	//MSE Lambda function
+			const double voltsConstant = 400;						//0-400V peak
+			const double freqConstant = 2.0*M_PI*100/(double)rate;	//0-100Hz
+			const double phiConstant = 2.0*M_PI;					//0-2PI radians
+			double accum = 0.0;
 			for(size_t pos = 0; pos < realSignalPtr.size(); pos++)
-				accum += 
-					abs(c[0]*400*(
-						sin(2.0*M_PI*c[1]*(double)pos/(double)rate*100
-						+c[2]*2.0*M_PI)
-					)-realSignalPtr[pos]);
+				accum += abs(c[0]*voltsConstant*sin(c[1]*freqConstant+c[2]*phiConstant)-realSignalPtr[pos]);
 			return accum/(double)realSignalPtr.size();
 		}
 	);
@@ -76,8 +83,9 @@ int main(int argc, char const *argv[])
 template<typename Lambda>
 std::vector<double> runDE(
 	const unsigned long int S,
-	const unsigned long int D,
+	const unsigned long int N,
 	const std::vector<double> randomVector,
+	const size_t randomVectorSize,
 	const unsigned long int maxGenerations,
 	const double stopEpsilon,
 	const double F,
@@ -86,89 +94,82 @@ std::vector<double> runDE(
 )
 {
 	size_t offset = 0;
-	const size_t m = S*D+maxGenerations*S;
-	//Create population
-	std::vector<std::vector<double>> agents;
-	agents.resize(S, std::vector<double>(D+1,0));
-	std::vector<std::vector<double>> NGagents(agents);
-	std::vector<std::vector<double>> *agentsPtr = &agents, *NGagentsPtr = &NGagents;
-	std::vector<double> *best = &(*agentsPtr)[0];
-	for (int i = 0; i < S; ++i)
+	//1. Initialization
+	std::vector<std::vector<double>> x;
+	x.resize(S, std::vector<double>(N+1,0.0));
+	std::vector<double> *best = &x[0];	//First is the best
+	for (std::vector<std::vector<double>>::iterator i = x.begin(); i != x.end(); ++i)
 	{
-		(*agentsPtr)[i][0]=randomVector[offset++];
-		(*agentsPtr)[i][1]=randomVector[offset++];
-		(*agentsPtr)[i][2]=randomVector[offset++];
-		double score = scoreFunction((*agentsPtr)[i]);
-		(*agentsPtr)[i][3]=score;
-		if(score<(*best)[3]) best = &(*agentsPtr)[i];
+		int j;
+		for (j = 0; j < N; ++j)
+			(*i)[j] = randomVector[offset++%randomVectorSize];
+		double score = scoreFunction(*i);
+		(*i)[j] = score;
+		if(score<(*best)[j]) best=&(*i);
 	}
-	//Score of the random population
+	std::vector<std::vector<double>> y(x);
+	std::vector<std::vector<double>> *xPtr = &x, *yPtr = &y;
 
-	double lastMSE = 0, minMSE = std::numeric_limits<double>::max();
-	unsigned long int currentGen = 0;
+	double lastBestMSE = 0;
+	unsigned long int currentGeneration = 0;
 	//Once population is created then enter the loop
 	do
 	{
-		lastMSE = minMSE;
-		minMSE = std::numeric_limits<double>::max();
-		for (int i = 0; i<(*agentsPtr).size(); ++i)
-		{	
-			if(best == &(*agentsPtr)[i]) continue;
-			//For each agent select 3 different (*agentsPtr)
-			std::vector<std::vector<double> *> diffagents = {&(*agentsPtr)[i],best};
-			std::vector<double> *agentPtr;
-			for (int k = 2; k < 4; ++k)
-			{
-				do
-				{
-					agentPtr = &(*agentsPtr)[randomVector[offset++%m]*S];
-				} while(std::find(diffagents.begin(),diffagents.end(),agentPtr)!=diffagents.end());
-				diffagents.push_back(agentPtr);
-			}
-			//Then reproduce
-			//std::vector<double> y = diffagents[1]-F*randomVector[offset++%m]*(diffagents[2]-diffagents[3]);
-			std::vector<double> y(*diffagents[2]);
-			std::transform(y.begin(),y.end(),diffagents[3]->begin(),y.begin(),
-				[F,randomVector,&offset,m](double a,double b){
-					return (F*randomVector[offset++%m])*(a-b);
-				}
-			);
-			std::transform(y.begin(),y.end(),diffagents[1]->begin(),y.begin(),
-				[](double a,double b){
-					return b-a;
-				}
-			);
-
-			//Then mutate
-			//Static member:
-			size_t delta = round(randomVector[offset++%m]*D)-1;
-			for (int j = 0; j < D; ++j)
-			{
-				if(delta!=j && randomVector[offset++%m]>R) y[j]=(*diffagents[1])[j];
-				else y[j]=std::min(1.0,std::max(0.0,y[j]));
-			}
-			//Selection
-			double score = scoreFunction(y);
-			minMSE = std::min(minMSE,score);
-			if ((*agentsPtr)[i][D]<score)
-				(*NGagentsPtr)[i]=(*agentsPtr)[i];
+		lastBestMSE = (*best)[N];
+		//Go one by one and modify it conditionally using best agent
+		for (int currx = 0; currx < S; ++currx)
+		{
+			std::vector<double> *currxPtr = &x[currx], *curryPtr = &y[currx];
+			if(currxPtr==best) continue; //The best remains unaltered
 			else
 			{
-				y[D]=score;
-				(*NGagentsPtr)[i]=y;
+				//2. Reproduction
+				//a. Select two different agents and best
+				std::vector<std::vector<double> *> parents = {currxPtr,best};
+				while(parents.size()!=4)
+				{
+					while(
+						std::find(
+							parents.begin(),
+							parents.end(),
+							&x[offset++%randomVectorSize]
+						)!=parents.end()
+					);
+					parents.push_back(&x[offset%randomVectorSize]); //Without ++
+				}
+				//b. Reproduce using (2.12) using b=best
+				std::vector<double> childAgent(*parents[2]);
+				std::transform(childAgent.begin(),childAgent.end(),parents[3]->begin(),childAgent.begin(),
+					[](double l, double r){ 
+						return l-r; 
+					});
+				std::transform(childAgent.begin(),childAgent.end(),parents[1]->begin(),childAgent.begin(),
+					[F,randomVector,randomVectorSize,&offset](double l, double r){ 
+						return l-F*randomVector[offset++%randomVectorSize]*r; 
+					});
+				//c. Crossover
+				const size_t delta = round(randomVector[offset++%randomVectorSize]*(N-1));
+				std::transform(childAgent.begin(),childAgent.end(),parents[0]->begin(),childAgent.begin(),
+					[R,delta,childAgent,randomVector,randomVectorSize,&offset](double l, double r){ 
+						return (randomVector[offset++%randomVectorSize]<=R || (&l-&childAgent[0]==delta))?r:l; 
+					});
+				y[currx] = childAgent;
 			}
-			if(y[D]<(*best)[D]) best = &(*NGagentsPtr)[i];
 		}
-		currentGen++;
-		for (std::vector<std::vector<double>>::iterator i = (*agentsPtr).begin(); i != (*agentsPtr).end(); ++i)
+		//3. Evaluation and selection
+		//a. Evaluation
+		for (int i = 0; i < S; ++i)
 		{
-			//std::cout << "Agent: [" << (*i)[0]*400 << "," << (*i)[1]/(2*M_PI*1/200) << "," << (*i)[2]*2*M_PI << "]=" << (*i)[3] << std::endl;
-			std::cout << "Real Agent: [" << (*i)[0] << "," << (*i)[1] << "," << (*i)[2] << "]=" << (*i)[3] << std::endl;
+			double score = scoreFunction(y[i]);
+			y[i][N] = score;
+			if(score<x[i][N])
+			{
+				x[i]=y[i];
+				if(score<(*best)[N]) {
+					best = &x[i];
+				}
+			}
 		}
-		std::swap(*NGagentsPtr,*agentsPtr);
-		std::cout << "Generation " << currentGen << ", Conditions:" << (abs(lastMSE-minMSE)>=stopEpsilon) << ", " << (maxGenerations > currentGen) << std::endl;
-		std::cout << "lastMSE: " << lastMSE << ", minMSE: " << minMSE << std::endl;
-		std::cout << "Best of this gen: " << (*best)[0] << "," << (*best)[1] << "," << (*best)[2] << "=" << (*best)[3] << std::endl;
-		std::cout << "Agent: [" << (*best)[0]*400 << "," << (*best)[1]*2*M_PI/200*100 << "," << (*best)[2]*2*M_PI << "]=" << (*best)[3] << std::endl;
-	} while(abs(lastMSE-minMSE)>=stopEpsilon && maxGenerations > currentGen);
+		currentGeneration++;
+	} while(currentGeneration<maxGenerations && abs(lastBestMSE - (*best)[N])>stopEpsilon);
 }
