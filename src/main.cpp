@@ -31,7 +31,7 @@ std::vector<double> runDE(
 int main(int argc, char const *argv[])
 {
     // Create signal
-    const size_t rate = 44100;
+    const size_t rate = 60*10;
 	SignalGenerator::SineSignalGenerator gen1 = SignalGenerator::SineSignalGenerator();
 	gen1.setRate(rate).setFrequency(60).setPhase(0.3).setAmplitude(127*sqrt(2));
 	SignalGenerator::WhiteNoiseSignalGenerator gen2 = SignalGenerator::WhiteNoiseSignalGenerator();
@@ -42,18 +42,19 @@ int main(int argc, char const *argv[])
 	SignalObject signal2 = gen2.generate(signalLength);
 	SignalObject sumSignal = signal1 + signal2;
 	sumSignal.addSagSwell(100, 199, 0.5);
+	sumSignal.writeCSV("signal.txt");
 
 	//Random initialization
 	std::random_device rnd_device;
 	std::mt19937 mersenne_engine(rnd_device());
 	std::uniform_real_distribution<double> dist(0, 1);
     auto gen = std::bind(dist, mersenne_engine);
-    const unsigned long int S = 10;
-    const unsigned long int maxGenerations = 2;
+    const unsigned long int S = 10000;
+    const unsigned long int maxGenerations = 3;
     const double stopEpsilon = 10e-6;
-    const double F = 2, R = 0.5;
+    const double F = 1.4, R = 0.5;
     size_t N = 3; //Number of parameters to estimate
-    const size_t randomVectorSize = S*(N+1)+1000000;	//Its recommended a big number
+    const size_t randomVectorSize = S*(N+1)+10000;	//Its recommended a big number
     std::vector<double> randomVector(randomVectorSize);
     std::generate(begin(randomVector), end(randomVector), gen);
     std::vector<double> realSignalPtr = sumSignal.m_data[0];
@@ -69,20 +70,30 @@ int main(int argc, char const *argv[])
 		[realSignalPtr,rate](const std::vector<double> c) -> double {	//SSE Lambda function
 			const double voltsConstantMin = 100;
 			const double voltsConstantMax = 300;					//100-300V peak
-			const double freqConstantMin = 2.0*M_PI*40/(double)rate;
-			const double freqConstantMax = 2.0*M_PI*70/(double)rate;//40-70Hz
-			printf("F: [%.16lf - %.16lf]\n",freqConstantMin,freqConstantMax);
+			const double omegaConstantMin = 2.0*M_PI*40;
+			const double omegaConstantMax = 2.0*M_PI*70;//40-70Hz
 			const double phiConstant = 2.0*M_PI;					//0-2PI radians
 			double accum = 0.0;
 			for(size_t pos = 0; pos < realSignalPtr.size(); pos++)
+			{
+				double volts = voltsConstantMin+c[0]*(voltsConstantMax - voltsConstantMin);
+				double omega = omegaConstantMin+c[1]*(omegaConstantMax - omegaConstantMin);
+				double phi = c[2]*phiConstant;
+				double t = (double)pos/(double)rate;
 				accum += abs(
-					voltsConstantMin+c[0]*(voltsConstantMax - voltsConstantMin)*sin(
-						freqConstantMin+c[1]*(freqConstantMax - freqConstantMin)+
-						c[2]*phiConstant
+					volts*sin(
+						omega*t+
+						phi
 					)-realSignalPtr[pos]);
+			}
 			return accum;
 		}
 	);
+	double signalSS = 0;
+	for_each( sumSignal.m_data->begin(),sumSignal.m_data->end(), [&signalSS](double a) { signalSS += pow(a,2); });
+	printf("Signal SS: %.16lf\n",signalSS);
+	printf("Lowest SSE: %.16lf\n",estimatedParameters[N]);
+	printf("Ratio (%%): %.16lf%%\n",estimatedParameters[N]/signalSS*100);
 	return 0;
 }
 
@@ -133,6 +144,8 @@ std::vector<double> runDE(
 				//2. Reproduction
 				//a. Select two different agents and best
 				std::vector<std::vector<double> *> parents = {currxPtr,best};
+				//a. (Variant) Select two different agents
+				// std::vector<std::vector<double> *> parents = {currxPtr};
 				while(parents.size()!=4)
 				{
 					for(;std::find(parents.begin(),parents.end(),&x[randomVector[offset % randomVectorSize]*(S-1)])!=parents.end();offset++);
@@ -173,8 +186,7 @@ std::vector<double> runDE(
 		}
 		//DEBUG
 		currentGeneration++;
-		std::cout << "Best in generation " << currentGeneration << ": ["
-			<< (*best)[0] << "," << (*best)[1] << "," << (*best)[2] << "]=";
-			printf("%.16lf\n",(*best)[3]);
+		printf("Best in generation %ld: [%.16lf,%.16lf,%.16lf]=%.16lf\n",currentGeneration,(*best)[0],(*best)[1],(*best)[2],(*best)[3]);
 	} while(currentGeneration<maxGenerations /*&& abs(lastBestMSE - (*best)[N])>stopEpsilon*/);
+	return *best;
 }
