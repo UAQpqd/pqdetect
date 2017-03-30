@@ -17,7 +17,7 @@ SignalObject SignalGenerator::SineSignalGenerator::generate(size_t N)
 
 	double w = 2*M_PI*m_frequency;
 	for (size_t i = 0; i < N; i++)
-		(*m_data)[i] = m_amplitude*sin(m_phase+w*(double)i/m_rate);
+		(*m_data)[i] = m_amplitude*sin(w*(double)i/(double)m_rate+m_phase);
 
 	return SignalObject(m_data);
 }
