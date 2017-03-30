@@ -17,8 +17,8 @@
 
 const double voltsConstantMin = 100;
 const double voltsConstantMax = 300;					//100-300V peak
-const double omegaConstantMin = 2.0*M_PI*40;
-const double omegaConstantMax = 2.0*M_PI*70;//40-70Hz
+const double omegaConstantMin = 2.0*M_PI*40;			
+const double omegaConstantMax = 2.0*M_PI*70;			//40-70Hz
 const double phiConstant = 2.0*M_PI;					//0-2PI radians
 
 template<typename Lambda>
@@ -28,7 +28,6 @@ std::vector<double> runDE(
 	const std::vector<double> randomVector,
 	const size_t randomVectorSize,
 	const unsigned long int maxGenerations,
-	const double stopEpsilon,
 	const double F,
 	const double R,
 	Lambda scoreFunction
@@ -38,16 +37,16 @@ int main(int argc, char const *argv[])
 {
     // Create signal
     const size_t rate = 60*10;
-	const size_t signalLength = 10*rate; //Generate 10 seconds
+	const size_t signalLength = 1*rate; //Generate 10 seconds
 	SignalGenerator::SineSignalGenerator gen1 = SignalGenerator::SineSignalGenerator();
 	gen1.setRate(rate).setFrequency(60).setPhase(0.3).setAmplitude(127*sqrt(2));
 	SignalGenerator::WhiteNoiseSignalGenerator gen2 = SignalGenerator::WhiteNoiseSignalGenerator();
-	gen2.setMean(0).setStandardDeviation(0);
+	gen2.setMean(0).setStandardDeviation(10);
 	//Generate the sum of them
 	SignalObject signal1 = gen1.generate(signalLength);
 	SignalObject signal2 = gen2.generate(signalLength);
-	SignalObject sumSignal = signal1/* + signal2*/;
-	//sumSignal.addSagSwell(100, 199, 0.5);
+	SignalObject sumSignal = signal1 + signal2;
+	sumSignal.addSagSwell(100, 199, 0.5);
 	sumSignal.writeCSV("signal.txt");
 
 	//Random initialization
@@ -57,7 +56,6 @@ int main(int argc, char const *argv[])
     auto gen = std::bind(dist, mersenne_engine);
     const unsigned long int S = 600;
     const unsigned long int maxGenerations = 80;
-    const double stopEpsilon = 10e-6;
     const double F = 1.4, R = 0.5;
     size_t N = 3; //Number of parameters to estimate
     const size_t randomVectorSize = S*(N+1)+10000;	//Its recommended a big number
@@ -70,7 +68,6 @@ int main(int argc, char const *argv[])
 		randomVector, 
 		randomVectorSize, 
 		maxGenerations, 
-		stopEpsilon, 
 		F, 
 		R,
 		[realSignalPtr,rate](const std::vector<double> c) -> double {	//SSE Lambda function
@@ -81,17 +78,17 @@ int main(int argc, char const *argv[])
 				double omega = omegaConstantMin+c[1]*(omegaConstantMax - omegaConstantMin);
 				double phi = c[2]*phiConstant;
 				double t = (double)pos/(double)rate;
-				accum += abs(
+				accum += pow(
 					volts*sin(
 						omega*t+
 						phi
-					)-realSignalPtr[pos]);
+					)-realSignalPtr[pos],2);
 			}
 			return accum;
 		}
 	);
 	double signalSS = 0;
-	for_each( sumSignal.m_data->begin(),sumSignal.m_data->end(), [&signalSS](double a) { signalSS += abs(a); });
+	for_each( sumSignal.m_data->begin(),sumSignal.m_data->end(), [&signalSS](double a) { signalSS += pow(a,2); });
 	printf("Signal SS: %.16lf\n",signalSS);
 	printf("Lowest SSE: %.16lf\n",estimatedParameters[N]);
 	printf("Ratio (%%): %.16lf%%\n",estimatedParameters[N]/signalSS*100);
@@ -106,7 +103,6 @@ std::vector<double> runDE(
 	const std::vector<double> randomVector,
 	const size_t randomVectorSize,
 	const unsigned long int maxGenerations,
-	const double stopEpsilon,
 	const double F,
 	const double R,
 	Lambda scoreFunction
@@ -129,12 +125,10 @@ std::vector<double> runDE(
 	std::vector<std::vector<double>> y;
 	y.resize(S, std::vector<double>(N+1,0.0));
 
-	double lastBestMSE = 0;
 	unsigned long int currentGeneration = 0;
 	//Once population is created then enter the loop
 	do
 	{
-		lastBestMSE = (*best)[N];
 		//Go one by one and modify it conditionally using best agent
 		for (int currx = 0; currx < S; ++currx)
 		{
@@ -191,6 +185,6 @@ std::vector<double> runDE(
 			voltsConstantMin+(*best)[0]*(voltsConstantMax - voltsConstantMin),
 			(omegaConstantMin+(*best)[1]*(omegaConstantMax - omegaConstantMin))/(2*M_PI),
 			(*best)[2]*phiConstant);
-	} while(currentGeneration<maxGenerations /*&& abs(lastBestMSE - (*best)[N])>stopEpsilon*/);
+	} while(currentGeneration<maxGenerations);
 	return *best;
 }
