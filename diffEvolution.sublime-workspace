@@ -4,6 +4,10 @@
 		"selected_items":
 		[
 			[
+				"curr",
+				"currParentIt"
+			],
+			[
 				"clCreateComman",
 				"clCreateCommandQueueWithProperties"
 			],
@@ -23,70 +27,20 @@
 			"file": "src/main.cpp",
 			"settings":
 			{
-				"buffer_size": 1265,
+				"buffer_size": 5842,
 				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "Package Control Messages\n========================\n\nPlainTasks\n----------\n\n  Thank you for installing PlainTasks.\n  \n  For quick start you probably would like to go through a short tutorial:\n  Preferences → Package Settings → PlainTasks → Tutorial\n",
+			"settings":
+			{
+				"buffer_size": 247,
 				"line_ending": "Unix",
-				"name": "#include <iostream.h>"
-			}
-		},
-		{
-			"file": "/home/mijiybola/.cache/.fr-mw2r2g/DE_Optimizer.cpp",
-			"settings":
-			{
-				"buffer_size": 3428,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "/home/mijiybola/Documentos/pqdetect/pqdApp/pqdApp/pqdApp.cpp",
-			"settings":
-			{
-				"buffer_size": 1695,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "src/SignalObject.cpp",
-			"settings":
-			{
-				"buffer_size": 1365,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "src/SignalGenerator.cpp",
-			"settings":
-			{
-				"buffer_size": 1056,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "src/SignalGenerator.h",
-			"settings":
-			{
-				"buffer_size": 1373,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "src/SignalObject.h",
-			"settings":
-			{
-				"buffer_size": 482,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "src/CMakeLists.txt",
-			"settings":
-			{
-				"buffer_size": 241,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
+				"name": "Package Control Messages",
+				"read_only": true,
+				"scratch": true
 			}
 		}
 	],
@@ -97,10 +51,18 @@
 	"build_varint": "",
 	"command_palette":
 	{
-		"height": 212.0,
-		"last_filter": "install",
+		"height": 72.0,
+		"last_filter": "tasks new",
 		"selected_items":
 		[
+			[
+				"tasks new",
+				"Tasks: New document"
+			],
+			[
+				"ins",
+				"Package Control: Install Package"
+			],
 			[
 				"install",
 				"Package Control: Install Package"
@@ -114,7 +76,7 @@
 				"Package Control: Install Package"
 			]
 		],
-		"width": 908.0
+		"width": 485.0
 	},
 	"console":
 	{
@@ -135,6 +97,16 @@
 	},
 	"file_history":
 	[
+		"/home/mijiybola/Documentos/git-DiffEvolution/pqdetect/build/Makefile",
+		"/home/mijiybola/Documentos/git-DiffEvolution/pqdetect/build/build.sh",
+		"/home/mijiybola/Documentos/git-DiffEvolution/pqdetect/src/CMakeLists.txt",
+		"/home/mijiybola/Documentos/git-DiffEvolution/pqdetect/src/SignalObject.h",
+		"/home/mijiybola/Documentos/git-DiffEvolution/pqdetect/src/SignalGenerator.h",
+		"/home/mijiybola/Documentos/git-DiffEvolution/pqdetect/src/SignalGenerator.cpp",
+		"/home/mijiybola/Documentos/git-DiffEvolution/pqdetect/src/main.cpp",
+		"/home/mijiybola/Documentos/git-DiffEvolution/pqdetect/src/SignalObject.cpp",
+		"/home/mijiybola/Documentos/pqdetect/pqdApp/pqdApp/pqdApp.cpp",
+		"/home/mijiybola/.cache/.fr-mw2r2g/DE_Optimizer.cpp",
 		"/home/mijiybola/Documentos/DiffEvolution/project/src/SignalObject.h",
 		"/home/mijiybola/Documentos/DiffEvolution/project/openCLKernels/program.cl",
 		"/home/mijiybola/Descargas/clRNG/clRNG.build/tests/Makefile",
@@ -147,7 +119,7 @@
 	],
 	"find":
 	{
-		"height": 32.0
+		"height": 40.0
 	},
 	"find_in_files":
 	{
@@ -161,6 +133,8 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"setas",
+			"HAMBURGUE",
 			"CTest.",
 			".c",
 			".cpp",
@@ -192,25 +166,24 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1265,
+						"buffer_size": 5842,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1223,
-								1223
+								3745,
+								3745
 							]
 						],
 						"settings":
 						{
-							"auto_name": "#include <iostream.h>",
-							"spell_check": true,
-							"syntax": "Packages/C++11/C++11.tmLanguage"
+							"syntax": "Packages/C++11/C++11.tmLanguage",
+							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 2603.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 1,
@@ -218,204 +191,32 @@
 				},
 				{
 					"buffer": 1,
-					"file": "/home/mijiybola/.cache/.fr-mw2r2g/DE_Optimizer.cpp",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 3428,
+						"buffer_size": 247,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								852,
-								852
+								247,
+								247
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/C++11/C++11.tmLanguage",
-							"translate_tabs_to_spaces": false
+							"auto_indent": false,
+							"syntax": "Packages/Text/Plain text.tmLanguage",
+							"tab_width": 2,
+							"word_wrap": true
 						},
-						"translation.x": -0.0,
+						"translation.x": 0.0,
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "/home/mijiybola/Documentos/pqdetect/pqdApp/pqdApp/pqdApp.cpp",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1695,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1282,
-								1282
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++11/C++11.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 360.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 6,
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "src/SignalObject.cpp",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1365,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1132,
-								1132
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++11/C++11.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 1008.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 5,
-					"type": "text"
-				},
-				{
-					"buffer": 4,
-					"file": "src/SignalGenerator.cpp",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1056,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++11/C++11.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 4,
-					"type": "text"
-				},
-				{
-					"buffer": 5,
-					"file": "src/SignalGenerator.h",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1373,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								135,
-								135
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.sublime-syntax",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 144.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 3,
-					"type": "text"
-				},
-				{
-					"buffer": 6,
-					"file": "src/SignalObject.h",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 482,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.sublime-syntax",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
-					"type": "text"
-				},
-				{
-					"buffer": 7,
-					"file": "src/CMakeLists.txt",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 241,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								95,
-								95
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/CMake/CMake.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 7,
 					"type": "text"
 				}
 			]
@@ -478,12 +279,12 @@
 	},
 	"select_project":
 	{
-		"height": 0.0,
+		"height": 500.0,
 		"last_filter": "",
 		"selected_items":
 		[
 		],
-		"width": 0.0
+		"width": 380.0
 	},
 	"select_symbol":
 	{
