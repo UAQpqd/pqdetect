@@ -15,8 +15,8 @@
 	@date: 29th March 2017
 */
 
-const double voltsConstantMin = 100;
-const double voltsConstantMax = 300;					//100-300V peak
+const double voltsConstantMin = 0;
+const double voltsConstantMax = 300;					//0-300V peak
 const double omegaConstantMin = 2.0*M_PI*40;			
 const double omegaConstantMax = 2.0*M_PI*70;			//40-70Hz
 const double phiConstant = 2.0*M_PI;					//0-2PI radians
@@ -31,13 +31,15 @@ std::vector<double> runDE(
 	const double F,
 	const double R,
 	Lambda scoreFunction,
-	Lambda2 generationFunction
+	Lambda2 generationFunction = [](size_t currentGeneration, std::vector<double> *best,std::vector<std::vector<double>> x) -> void {},
+	bool useBestReproduction = true,
+	bool useBestMutation = true
 );
 
 int main(int argc, char const *argv[])
 {
     // Create signal
-    const size_t rate = 60*10;
+    const size_t rate = 60*40;
 	const size_t signalLength = 1*rate; //Generate 10 seconds
 	SignalGenerator::SineSignalGenerator gen1 = SignalGenerator::SineSignalGenerator();
 	gen1.setRate(rate).setFrequency(60).setPhase(0.3).setAmplitude(127*sqrt(2));
@@ -117,7 +119,9 @@ std::vector<double> runDE(
 	const double F,
 	const double R,
 	Lambda scoreFunction,
-	Lambda2 generationFunction
+	Lambda2 generationFunction,
+	bool useBestReproduction,
+	bool useBestMutation
 )
 {
 	size_t offset = 0;
@@ -147,7 +151,9 @@ std::vector<double> runDE(
 			std::vector<double> *currxPtr = &x[currx], *curryPtr = &y[currx];
 			//2. Reproduction
 			//a. Select two different agents and best
-			std::vector<std::vector<double> *> parents = {currxPtr,best};
+			std::vector<std::vector<double> *> parents;
+			if(useBestReproduction) parents = {currxPtr,best};
+			else parents = {currxPtr};
 			//a. (Variant) Select two different agents
 			// std::vector<std::vector<double> *> parents = {currxPtr};
 			while(parents.size()!=4)
@@ -168,7 +174,7 @@ std::vector<double> runDE(
 				});
 			//c. Crossover
 			const size_t delta = round(randomVector[offset++%randomVectorSize]*(N-1));
-			std::transform(childAgent.begin(),childAgent.end(),parents[1]->begin(),childAgent.begin(),
+			std::transform(childAgent.begin(),childAgent.end(),parents[(useBestMutation)?1:0]->begin(),childAgent.begin(),
 				[R,delta,childAgent,randomVector,randomVectorSize,&offset](double l, double r){ 
 					return (randomVector[offset++%randomVectorSize]>R && (&l-&childAgent[0]!=delta))?r:std::min(std::max(l,0.0),1.0); 
 				});
