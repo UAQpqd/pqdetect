@@ -45,8 +45,8 @@ int main(int argc, char const *argv[])
 	//Generate the sum of them
 	SignalObject signal1 = gen1.generate(signalLength);
 	SignalObject signal2 = gen2.generate(signalLength);
-	SignalObject sumSignal = signal1 + signal2;
-	sumSignal.addSagSwell(100, 199, 0.5);
+	SignalObject sumSignal = signal1 /*+ signal2*/;
+	//sumSignal.addSagSwell(100, 199, 0.5);
 	sumSignal.writeCSV("signal.txt");
 
 	//Random initialization
@@ -54,7 +54,7 @@ int main(int argc, char const *argv[])
 	std::mt19937 mersenne_engine(rnd_device());
 	std::uniform_real_distribution<double> dist(0, 1);
     auto gen = std::bind(dist, mersenne_engine);
-    const unsigned long int S = 600;
+    const unsigned long int S = 2000;
     const unsigned long int maxGenerations = 80;
     const double F = 1.4, R = 0.5;
     size_t N = 3; //Number of parameters to estimate
@@ -156,7 +156,7 @@ std::vector<double> runDE(
 				});
 			//c. Crossover
 			const size_t delta = round(randomVector[offset++%randomVectorSize]*(N-1));
-			std::transform(childAgent.begin(),childAgent.end(),parents[0]->begin(),childAgent.begin(),
+			std::transform(childAgent.begin(),childAgent.end(),parents[1]->begin(),childAgent.begin(),
 				[R,delta,childAgent,randomVector,randomVectorSize,&offset](double l, double r){ 
 					return (randomVector[offset++%randomVectorSize]>R && (&l-&childAgent[0]!=delta))?r:std::min(std::max(l,0.0),1.0); 
 				});
