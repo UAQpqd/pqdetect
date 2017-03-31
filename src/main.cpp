@@ -156,7 +156,7 @@ std::vector<double> runDE(
 				});
 			//c. Crossover
 			const size_t delta = round(randomVector[offset++%randomVectorSize]*(N-1));
-			std::transform(childAgent.begin(),childAgent.end(),parents[1]->begin(),childAgent.begin(),
+			std::transform(childAgent.begin(),childAgent.end(),parents[0]->begin(),childAgent.begin(),
 				[R,delta,childAgent,randomVector,randomVectorSize,&offset](double l, double r){ 
 					return (randomVector[offset++%randomVectorSize]>R && (&l-&childAgent[0]!=delta))?r:std::min(std::max(l,0.0),1.0); 
 				});
