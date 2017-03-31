@@ -21,7 +21,7 @@ const double omegaConstantMin = 2.0*M_PI*40;
 const double omegaConstantMax = 2.0*M_PI*70;			//40-70Hz
 const double phiConstant = 2.0*M_PI;					//0-2PI radians
 
-template<typename Lambda>
+template<typename Lambda, typename Lambda2>
 std::vector<double> runDE(
 	const unsigned long int S,
 	const unsigned long int N,
@@ -30,7 +30,8 @@ std::vector<double> runDE(
 	const unsigned long int maxGenerations,
 	const double F,
 	const double R,
-	Lambda scoreFunction
+	Lambda scoreFunction,
+	Lambda2 generationFunction
 );
 
 int main(int argc, char const *argv[])
@@ -85,6 +86,16 @@ int main(int argc, char const *argv[])
 					)-realSignalPtr[pos],2);
 			}
 			return accum;
+		},
+		[](size_t currentGeneration, std::vector<double> *best,std::vector<std::vector<double>> x) -> void {
+			printf("Best in generation %ld SSE %lf:\n" \
+			"\t[%.16lf,%.16lf,%.16lf]\n" \
+			"\t[%.16lf V,%.16lf Hz,%.16lf Radians]\n",
+			currentGeneration,(*best)[3],
+			(*best)[0],(*best)[1],(*best)[2],
+			voltsConstantMin+(*best)[0]*(voltsConstantMax - voltsConstantMin),
+			(omegaConstantMin+(*best)[1]*(omegaConstantMax - omegaConstantMin))/(2*M_PI),
+			(*best)[2]*phiConstant);
 		}
 	);
 	double signalSS = 0;
@@ -96,7 +107,7 @@ int main(int argc, char const *argv[])
 }
 
 
-template<typename Lambda>
+template<typename Lambda, typename Lambda2>
 std::vector<double> runDE(
 	const unsigned long int S,
 	const unsigned long int N,
@@ -105,7 +116,8 @@ std::vector<double> runDE(
 	const unsigned long int maxGenerations,
 	const double F,
 	const double R,
-	Lambda scoreFunction
+	Lambda scoreFunction,
+	Lambda2 generationFunction
 )
 {
 	size_t offset = 0;
@@ -156,7 +168,7 @@ std::vector<double> runDE(
 				});
 			//c. Crossover
 			const size_t delta = round(randomVector[offset++%randomVectorSize]*(N-1));
-			std::transform(childAgent.begin(),childAgent.end(),parents[0]->begin(),childAgent.begin(),
+			std::transform(childAgent.begin(),childAgent.end(),parents[1]->begin(),childAgent.begin(),
 				[R,delta,childAgent,randomVector,randomVectorSize,&offset](double l, double r){ 
 					return (randomVector[offset++%randomVectorSize]>R && (&l-&childAgent[0]!=delta))?r:std::min(std::max(l,0.0),1.0); 
 				});
@@ -177,14 +189,7 @@ std::vector<double> runDE(
 		}
 		//DEBUG
 		currentGeneration++;
-		printf("Best in generation %ld SSE %lf:\n" \
-			"\t[%.16lf,%.16lf,%.16lf]\n" \
-			"\t[%.16lf V,%.16lf Hz,%.16lf Radians]\n",
-			currentGeneration,(*best)[3],
-			(*best)[0],(*best)[1],(*best)[2],
-			voltsConstantMin+(*best)[0]*(voltsConstantMax - voltsConstantMin),
-			(omegaConstantMin+(*best)[1]*(omegaConstantMax - omegaConstantMin))/(2*M_PI),
-			(*best)[2]*phiConstant);
+		generationFunction(currentGeneration,best,x);
 	} while(currentGeneration<maxGenerations);
 	return *best;
 }
