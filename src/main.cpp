@@ -27,13 +27,14 @@ std::vector<double> runDE(
 	const unsigned long int N,
 	const std::vector<double> randomVector,
 	const size_t randomVectorSize,
-	const unsigned long int maxGenerations,
+	const unsigned long int G,
+	const double epsilon,
 	const double F,
 	const double R,
 	Lambda scoreFunction,
 	Lambda2 generationFunction = [](size_t currentGeneration, std::vector<double> *best,std::vector<std::vector<double>> x) -> void {},
 	bool useBestReproduction = true,
-	bool useBestMutation = true
+	bool useBestMutation = false
 );
 
 int main(int argc, char const *argv[])
@@ -52,13 +53,17 @@ int main(int argc, char const *argv[])
 	//sumSignal.addSagSwell(100, 199, 0.5);
 	sumSignal.writeCSV("signal.txt");
 
+
+	double signalSS = 0;
+	for_each( sumSignal.m_data->begin(),sumSignal.m_data->end(), [&signalSS](double a) { signalSS += pow(a,2); });
+
 	//Random initialization
 	std::random_device rnd_device;
 	std::mt19937 mersenne_engine(rnd_device());
 	std::uniform_real_distribution<double> dist(0, 1);
     auto gen = std::bind(dist, mersenne_engine);
     const unsigned long int S = 2000;
-    const unsigned long int maxGenerations = 80;
+    const unsigned long int G = 80;
     const double F = 1.4, R = 0.5;
     size_t N = 3; //Number of parameters to estimate
     const size_t randomVectorSize = S*(N+1)+10000;	//Its recommended a big number
@@ -69,8 +74,9 @@ int main(int argc, char const *argv[])
 		S, 
 		N, 
 		randomVector, 
-		randomVectorSize, 
-		maxGenerations, 
+		randomVectorSize,
+		80, 
+		0.01*signalSS, 
 		F, 
 		R,
 		[realSignalPtr,rate](const std::vector<double> c) -> double {	//SSE Lambda function
@@ -90,7 +96,7 @@ int main(int argc, char const *argv[])
 			return accum;
 		},
 		[](size_t currentGeneration, std::vector<double> *best,std::vector<std::vector<double>> x) -> void {
-			printf("Best in generation %ld SSE %lf:\n" \
+			printf("Best in generation %ld SSE %.16lf:\n" \
 			"\t[%.16lf,%.16lf,%.16lf]\n" \
 			"\t[%.16lf V,%.16lf Hz,%.16lf Radians]\n",
 			currentGeneration,(*best)[3],
@@ -100,8 +106,6 @@ int main(int argc, char const *argv[])
 			(*best)[2]*phiConstant);
 		}
 	);
-	double signalSS = 0;
-	for_each( sumSignal.m_data->begin(),sumSignal.m_data->end(), [&signalSS](double a) { signalSS += pow(a,2); });
 	printf("Signal SS: %.16lf\n",signalSS);
 	printf("Lowest SSE: %.16lf\n",estimatedParameters[N]);
 	printf("Ratio (%%): %.16lf%%\n",estimatedParameters[N]/signalSS*100);
@@ -115,7 +119,8 @@ std::vector<double> runDE(
 	const unsigned long int N,
 	const std::vector<double> randomVector,
 	const size_t randomVectorSize,
-	const unsigned long int maxGenerations,
+	const unsigned long int G,
+	const double epsilon,
 	const double F,
 	const double R,
 	Lambda scoreFunction,
@@ -196,6 +201,6 @@ std::vector<double> runDE(
 		//DEBUG
 		currentGeneration++;
 		generationFunction(currentGeneration,best,x);
-	} while(currentGeneration<maxGenerations);
+	} while(currentGeneration<G && (*best)[N]>epsilon);
 	return *best;
 }
